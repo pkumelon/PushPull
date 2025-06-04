@@ -8,6 +8,10 @@ L_total = 1440000
 n = 16
 num_runs = 20
 device_id = "cuda:0"
+rho = 1e-2
+lr = 5e-2
+max_it = 3000
+bs = 200
 
 
 gpu_id_int = int(device_id.split(":")[1])
@@ -23,7 +27,7 @@ print("h_tilde:", h_tilde_cpu.shape)
 print("y_tilde:", y_tilde_cpu.shape)
 
 init_x_cpu_single = init_x_func(n=n, d=d, seed=42)
-A_cpu, B_cpu = get_matrixs_from_exp_graph(n=n, seed=42)
+A_cpu, B_cpu = generate_exp_matrices(n=n, seed=42)
 print("CPU data is prepared.")
 
 
@@ -54,11 +58,11 @@ L1_avg_df = PushPull_with_batch_batched_gpu(
     h_data_nodes_gpu=h_tilde_gpu_nodes,
     y_data_nodes_gpu=y_tilde_gpu_nodes,
     grad_func_batched_gpu=grad_with_batch_batched_gpu,
-    rho=1e-2,
-    lr=5e-2,
-    sigma_n=0,
-    max_it=3000,
-    batch_size=200,
+    rho=rho,
+    lr=lr,
+    sigma_n=0, # manually setted noise, here it is 0
+    max_it=max_it,
+    batch_size=bs,
     num_runs=num_runs,
 )
 print("\nL1_avg_df (from GPU batched execution):")
